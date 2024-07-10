@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Button, FlatList, Image, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  Button,
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { StatusBar } from "expo-status-bar";
 import AddTask from "./components/AddTask";
 import SingleTask from "./components/SingleTask";
@@ -22,7 +30,7 @@ const App = () => {
    */
   const onCloseModal = () => {
     setOpenModal(false);
-    setError(""); // Clear any previous errors when closing modal
+    setError("");
   };
 
   /**
@@ -30,7 +38,6 @@ const App = () => {
    */
   const handleAddTask = () => {
     setOpenModal(true);
-    setError(""); // Clear any previous errors when opening modal
   };
 
   /**
@@ -40,11 +47,12 @@ const App = () => {
   const handleTask = (enteredText) => {
     if (enteredText === "") {
       setError("Task name cannot be empty");
+      Alert.alert("Error", "Task name cannot be empty");
     } else if (taskName.some((task) => task.name === enteredText)) {
-      setError("Task name must be unique");
+      setError("Task name already exist!");
+      Alert.alert("Error", "Task name already exist!");
     } else {
       if (editTask) {
-        // Update existing task
         setTaskName((currentTask) =>
           currentTask
             .map((task) =>
@@ -58,7 +66,6 @@ const App = () => {
         );
         setEditTask(null);
       } else {
-        // Add new task
         setTaskName((currentTask) => {
           const newTasks = [
             ...currentTask,
@@ -75,7 +82,7 @@ const App = () => {
                   minute: "2-digit",
                 })
                 .replace(",", ""),
-              completed: false,
+              completed: false, // Initialize the task as not completed
             },
           ];
           return newTasks.sort(
@@ -84,7 +91,7 @@ const App = () => {
         });
       }
       setOpenModal(false);
-      setError(""); // Clear any previous errors after successful task addition or edit
+      setError("");
     }
   };
 
@@ -110,7 +117,6 @@ const App = () => {
     setEditTask(taskToEdit);
     setPriorityValue(taskToEdit.priority);
     setOpenModal(true);
-    setError(""); // Clear any previous errors when editing task
   };
 
   /**
@@ -146,7 +152,6 @@ const App = () => {
       <View>
         <Button title="Add Task" onPress={handleAddTask} color="#663399" />
       </View>
-      {error !== "" && <Text style={styles.errorText}>{error}</Text>}
       {openModal && (
         <AddTask
           onCloseModal={onCloseModal}
